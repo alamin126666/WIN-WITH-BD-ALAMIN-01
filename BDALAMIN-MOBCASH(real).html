@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - BD ALAMIN MOBCASH</title>
+
+  <!-- Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-accent: #00d2ff;
+      --secondary-accent: #3a7bd5;
+      --subtract-accent-start: #f39c12;
+      --subtract-accent-end: #e67e22;
+    }
+    
+    html {
+      height: 100%;
+      background: linear-gradient(125deg, #232526, #414345, #1d2b64, #f8cdda, #1d4350, #a43931);
+      background-size: 400% 400%;
+      animation: aurora 15s ease infinite;
+    }
+    
+    @keyframes aurora {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: transparent;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .main-panel {
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .main-panel h1 {
+        text-align: center; font-size: 32px; font-weight: 700;
+        color: #fff; margin: 0 0 25px 0; text-shadow: 0 0 10px var(--primary-accent);
+    }
+    
+    .search-wrapper, .sort-buttons { margin-bottom: 20px; }
+    .search-wrapper { position: relative; }
+    .search-wrapper .search-icon { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); width: 20px; height: 20px; fill: #aaa; }
+    #searchInput { width: 100%; padding: 12px 12px 12px 50px; font-size: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 10px; box-sizing: border-box; }
+    #searchInput:focus { outline: none; border-color: var(--primary-accent); }
+    #searchInput:focus ~ .search-icon { fill: var(--primary-accent); }
+    
+    .icon { width: 1.1em; height: 1.1em; vertical-align: -0.2em; margin-right: 8px; fill: currentColor; }
+    
+    .sort-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+    .sort-buttons button { padding: 12px 20px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; }
+    .sort-buttons button { background: rgba(255, 255, 255, 0.1); color: #e0e0e0; }
+    .sort-buttons button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+    .user { 
+        padding: 20px; margin-bottom: 20px; display: flex; 
+        justify-content: space-between; align-items: center; 
+        transition: all 0.3s ease;
+        flex-wrap: wrap;
+    }
+    .user:hover { transform: scale(1.02); box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.37); }
+    .user-info { flex-grow: 1; min-width: 200px; }
+    .user-info strong { color: var(--primary-accent); font-weight: 600; }
+    .user-buttons { flex-shrink: 0; margin-top: 15px; }
+    .user-buttons button { padding: 8px 14px; margin-left: 10px; border-radius: 8px; border:none; cursor:pointer; font-weight: 600; display: inline-flex; align-items: center; }
+    
+    .add-btn { background: #28a745; color: white; }
+    .subtract-btn { background: linear-gradient(45deg, var(--subtract-accent-start), var(--subtract-accent-end)); color: white; }
+    .remove-btn { background: #dc3545; color: white; }
+
+    .modal h3 { color: var(--primary-accent); margin-top: 0; display: flex; align-items: center; }
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 1000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); }
+    .modal { padding: 25px; width: 90%; max-width: 400px; animation: slideIn 0.3s ease-out; }
+    .modal input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; box-sizing: border-box; }
+    .modal .modal-actions { text-align: right; margin-top: 20px; }
+    .modal button { padding: 10px 18px; margin-left: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .confirm-btn { background: var(--secondary-accent); color: white; }
+    .confirm-subtract-btn { background: var(--subtract-accent-start); color: white; }
+    .danger-btn { background: #e53935; color: white; }
+    .cancel-btn { background: rgba(255,255,255,0.2); color: white; }
+    @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    #toastContainer { position: fixed; top: 20px; right: 20px; z-index: 2000; }
+    .toast { padding: 15px 20px; margin-bottom: 10px; border-radius: 10px; color: white; font-weight: 500; animation: slideDown 0.4s ease; }
+    .toast.success { background: #28a745; }
+    .toast.error { background: #dc3545; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    
+    <div class="main-panel glass-effect">
+        <h1>ADMIN PANEL</h1>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="Search user...">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="sort-buttons">
+            <button id="sortByName"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z"/></svg>Sort by Name</button>
+            <button id="sortByBalance"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>Sort by Balance</button>
+        </div>
+    </div>
+    
+    <div id="userList"></div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script>
+    // --- আপনার দেওয়া নতুন Firebase কনফিগারেশন ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMP-zG1iL61iGEMDSVi9ww7OLn2N8Nfcw",
+      authDomain: "vip-file-crack.firebaseapp.com",
+      databaseURL: "https://vip-file-crack-default-rtdb.firebaseio.com",
+      projectId: "vip-file-crack",
+      storageBucket: "vip-file-crack.appspot.com",
+      messagingSenderId: "105543986974",
+      appId: "1:105543986974:android:903b6cb87653e9e906a30f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const userListEl = document.getElementById('userList');
+    const searchInput = document.getElementById('searchInput');
+    let allUsersData = [];
+
+    db.ref('ALL_USER').on('value', snapshot => {
+      const data = snapshot.val() || {};
+      allUsersData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      renderUsers(allUsersData);
+    }, (error) => {
+        // ডেটাবেস কানেকশন বা পারমিশন সমস্যা হলে এখানে এরর দেখাবে
+        console.error("Firebase Database Error:", error);
+        showToast("Database connection failed. Check console for errors.", "error");
+        userListEl.innerHTML = `<div class="glass-effect" style="padding: 20px; text-align:center; color: #ff5252;">Could not connect to the database. Please check your Firebase rules and configuration.</div>`;
+    });
+
+    function renderUsers(users) {
+      userListEl.innerHTML = '';
+      const searchTerm = searchInput.value.toLowerCase();
+      const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchTerm) || (user.email && user.email.toLowerCase().includes(searchTerm)));
+      if (filteredUsers.length === 0) {
+          userListEl.innerHTML = `<div class="glass-effect" style="padding: 20px; text-align:center;">No users found.</div>`;
+          return;
+      }
+      filteredUsers.forEach(user => {
+        const userDiv = document.createElement('div');
+        userDiv.className = 'user glass-effect';
+        userDiv.innerHTML = `
+          <div class="user-info">
+            <strong>Name:</strong> ${user.name}<br>
+            <strong>Email:</strong> ${user.email || 'N/A'}<br>
+            <strong>Balance:</strong> ${user.balance || 0}
+          </div>
+          <div class="user-buttons">
+            <button class="add-btn" onclick="showAddBalanceModal('${user.id}', ${user.balance || 0})"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>Add</button>
+            <button class="subtract-btn" onclick="showSubtractBalanceModal('${user.id}', ${user.balance || 0})"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>Subtract</button>
+            <button class="remove-btn" onclick="showRemoveUserModal('${user.id}')"><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>Remove</button>
+          </div>
+        `;
+        userListEl.appendChild(userDiv);
+      });
+    }
+
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer') || document.body.appendChild(document.createElement('div'));
+        toastContainer.id = 'toastContainer';
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function showModal(content) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `<div class="modal glass-effect">${content}</div>`;
+        overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function showAddBalanceModal(userId, currentBalance) {
+      const overlay = showModal(`
+        <h3><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>Add Balance</h3>
+        <input type="number" id="balanceInput" placeholder="Enter amount to add..."><div class="modal-actions"><button class="cancel-btn">Cancel</button><button class="confirm-btn">Add</button></div>`);
+      overlay.querySelector('.cancel-btn').onclick = () => overlay.remove();
+      overlay.querySelector('.confirm-btn').onclick = () => {
+          const amount = parseInt(document.getElementById('balanceInput').value);
+          if (!isNaN(amount) && amount > 0) {
+            db.ref('ALL_USER/' + userId).update({ balance: currentBalance + amount }).then(() => { overlay.remove(); showToast('Balance added successfully!'); });
+          } else { showToast('Please enter a valid amount!', 'error'); }
+      };
+    }
+    
+    function showSubtractBalanceModal(userId, currentBalance) {
+      const overlay = showModal(`
+        <h3><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>Subtract Balance</h3>
+        <input type="number" id="balanceInput" placeholder="Enter amount to subtract...">
+        <div class="modal-actions">
+            <button class="cancel-btn">Cancel</button>
+            <button class="confirm-subtract-btn">Subtract</button>
+        </div>`);
+      overlay.querySelector('.cancel-btn').onclick = () => overlay.remove();
+      overlay.querySelector('.confirm-subtract-btn').onclick = () => {
+          const amount = parseInt(document.getElementById('balanceInput').value);
+          if (isNaN(amount) || amount <= 0) { showToast('Please enter a valid positive amount!', 'error'); return; }
+          if (amount > currentBalance) { showToast('Cannot subtract more than the current balance!', 'error'); return; }
+          db.ref('ALL_USER/' + userId).update({ balance: currentBalance - amount }).then(() => { overlay.remove(); showToast('Balance subtracted successfully!'); });
+      };
+    }
+
+    function showRemoveUserModal(userId) {
+      const overlay = showModal(`
+        <h3><svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 3.001-1.742 3.001H4.42c-1.53 0-2.493-1.667-1.743-3.001l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 011-1h.008a1 1 0 011 1v3.008a1 1 0 01-1 1H9a1 1 0 01-1-1V5z" clip-rule="evenodd" /></svg>Confirm Removal</h3>
+        <p>Are you sure you want to remove this user?</p><div class="modal-actions"><button class="cancel-btn">Cancel</button><button class="danger-btn">Yes, Remove</button></div>`);
+      overlay.querySelector('.cancel-btn').onclick = () => overlay.remove();
+      overlay.querySelector('.danger-btn').onclick = () => {
+          db.ref('ALL_USER/' + userId).remove().then(() => { overlay.remove(); showToast('User removed successfully!'); });
+      };
+    }
+    searchInput.addEventListener('input', () => renderUsers(allUsersData));
+    document.getElementById('sortByName').addEventListener('click', () => renderUsers([...allUsersData].sort((a, b) => a.name.localeCompare(b.name))));
+    document.getElementById('sortByBalance').addEventListener('click', () => renderUsers([...allUsersData].sort((a, b) => (b.balance || 0) - (a.balance || 0))));
+  </script>
+
+</body>
+</html>
